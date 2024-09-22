@@ -1,15 +1,32 @@
-const express = require('express')
-require('dotenv').config()
+const express = require("express");
+const moment = require("moment");
+const path = require("path");
+const cors = require("cors");
 
-const database = require('./config/database')
-database.connect()
+require("dotenv").config();
 
-const app = express()
-const port = process.env.PORT
+//Ket noi co so du lieu
+const database = require("./config/database");
+database.connect();
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use('/', (red, res) => { res.send('SEVER ON') })
-app.listen( port, () => {
-    console.log('SEVER chay cong ' + port)
-})
+const app = express();
+const port = process.env.PORT;
+
+app.use(cors());
+
+const adminRoute = require("./routes/admin/index.route");
+const systemPrefix = require('./config/system')
+
+//parse
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.locals.adminPrefix = systemPrefix.adminPrefix
+app.locals.moment = moment
+
+//route
+adminRoute(app)
+
+app.listen(port, () => {
+  console.log(`App listening on port ${port}`)
+});

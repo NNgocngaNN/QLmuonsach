@@ -15,15 +15,13 @@
 <script>
 export default {
   props: {
-    books: { type: Array, default: () => [] },
+    books: { type: Array, default: [] },
     activeIndex: { type: Number, default: -1 },
   },
   emits: ["update:activeIndex"],
   methods: {
     updateActiveIndex(index) {
       this.$emit("update:activeIndex", index);
-      console.log("Active Index:", index);
-    console.log("Active Book:", this.books[index]);
     },
   },
 };

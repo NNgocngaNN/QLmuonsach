@@ -147,7 +147,7 @@ export default {
         formData.append("bookTitle", this.formData.bookTitle);
         formData.append("price", this.formData.price);
         formData.append("quantity", this.formData.quantity);
-        formData.append("publishYear", this.formData.publishYear);
+        formData.append("publishYear", this.formData.publishYear); // Append the image file
         formData.append("publisherName", this.formData.publisherName);
         formData.append("publisherAddress", this.formData.publisherAddress);
         formData.append("author", this.formData.author);
@@ -175,6 +175,7 @@ export default {
   width: 60%;
   height: 850px;
   text-align: center;
+  /* margin-top: 10px; */
   background-color: #f5f5f5;
   border: 1px solid #ccc;
   border-radius: 5px;

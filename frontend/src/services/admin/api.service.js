@@ -7,10 +7,9 @@ const commonConfig = {
     Accept: "multipart/form-data; boundary=<calculated when request is sent>",
   },
 };
-
 export default (baseURL) => {
-    return axios.create({
-        baseURL,
-        ...commonConfig,
-    });
+  return axios.create({
+    baseURL,
+    ...commonConfig,
+  });
 };

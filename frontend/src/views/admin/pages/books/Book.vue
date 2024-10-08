@@ -8,9 +8,10 @@
         </div>
         <div class="mt-3 col-8">
           <h4>
-            Danh sách các loại sách trong kho
+            Danh Sách Sách Trong Kho
             <i class="fa-solid fa-book"></i>
           </h4>
+
           <div class="item">
             <button
               class="btn btn-sm btn-primary custom-margin"
@@ -19,23 +20,25 @@
               <i class="fas fa-redo"></i> Làm mới
             </button>
             <button
-              class="btn btn-sm btn-primary custom-margin"
-              @click="refreshList()"
+              class="btn btn-sm btn-success custom-margin"
+              @click="goToAddBook"
             >
               <i class="fas fa-plus"></i> Thêm mới
             </button>
             <button
-              class="btn btn-sm btn-primary custom-margin"
-              @click="refreshList()"
+              class="btn btn-sm btn-danger custom-margin"
+              @click="removeAllBooks"
             >
               <i class="fas fa-trash"></i> Xóa tất cả
             </button>
           </div>
+
           <BookList
             v-if="filteredBooksCount > 0"
             :books="filteredBooks"
-            v-model:activeIndex="activeIndex"
+            v-model="activeIndex"
           />
+
           <p v-else>Không có cuốn sách nào.</p>
         </div>
 
@@ -78,7 +81,7 @@ import BookList from "@/components/admin/BookList.vue";
 import BookService from "@/services/admin/book.service";
 
 export default {
-  Components: {
+  components: {
     BookDetail,
     InputSearch,
     BookList,
@@ -87,7 +90,7 @@ export default {
 
   data() {
     return {
-      book: [],
+      books: [],
       activeIndex: -1,
       searchText: "",
     };
@@ -104,7 +107,6 @@ export default {
       return this.books.map((book) => {
         const { bookTitle, price, quantity, publishYear, author, thumbnail } =
           book;
-
         return [
           bookTitle,
           price,
@@ -119,9 +121,9 @@ export default {
     filteredBooks() {
       if (!this.searchText) return this.books;
 
-      return this.books.filter((_book, index) => {
-        this.booksStrings[index].includes(this.searchText);
-      });
+      return this.books.filter((_book, index) =>
+        this.booksStrings[index].includes(this.searchText)
+      );
     },
 
     activeBook() {
@@ -137,7 +139,7 @@ export default {
   methods: {
     async retrieveBooks() {
       try {
-        this.books = await BookServervice.getAll();
+        this.books = await BookService.getAll();
       } catch (error) {
         console.log(error);
       }
@@ -150,9 +152,9 @@ export default {
     },
 
     async removeOneBook(book) {
-      if (confirm("Bạn muốn xoá cuốn sách này")) {
+      if (confirm("Bạn muốn xóa cuốn sách này?")) {
         try {
-          await BookService.deleteAll(book._id);
+          await BookService.delete(book._id);
           this.refreshList();
         } catch (error) {
           console.log(error);
@@ -160,8 +162,8 @@ export default {
       }
     },
 
-    async removeAllBook(book) {
-      if (confirm("Bạn muốn xoá tất cả sách")) {
+    async removeAllBooks() {
+      if (confirm("Bạn muốn xóa tất cả sách?")) {
         try {
           await BookService.deleteAll();
           this.refreshList();

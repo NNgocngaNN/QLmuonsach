@@ -9,6 +9,16 @@ const adminRoutes = [
     name: "reader",
     component: () => import("@/views/admin/pages/books/Reader.vue"),
   },
+  {
+    path: "/admin/books/:id",
+    name: "book.edit",
+    component: () => import("@/views/admin/pages/books/BookEdit.vue"),
+  },
+  {
+    path: "/admin/books/create",
+    name: "book.add",
+    component: () => import("@/views/admin/pages/books/CreateBook.vue"),
+  },
 ];
 
 export default adminRoutes;

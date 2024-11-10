@@ -26,16 +26,15 @@
           </router-link>
         </li>
 
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <router-link
             :to="{ name: 'borrow' }"
             class="nav-link"
             :class="{ active: $route.name === 'borrow' }"
           >
-            <h6><b>Quản lý mượn sách</b></h6>
-            <i class="fa-solid fa-book-reader"></i>
+            <h6>QUẢN LÍ MƯỢN SÁCH</h6>
           </router-link>
-        </li>-->
+        </li>
 
         <li class="nav-item">
           <router-link

@@ -5,6 +5,11 @@ const adminRoutes = [
     component: () => import("@/views/admin/pages/books/Book.vue"),
   },
   {
+    path: "/admin/books/borrow",
+    name: "borrow",
+    component: () => import("@/views/admin/pages/books/BorrowBook.vue"),
+  },
+  {
     path: "/admin/books/reader",
     name: "reader",
     component: () => import("@/views/admin/pages/books/Reader.vue"),

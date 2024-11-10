@@ -73,6 +73,8 @@
             </button>
           </div>
         </div>
+
+        <BackToTop />
       </div>
     </div>
   </div>
@@ -82,11 +84,13 @@
 import ReaderDetail from "@/components/admin/ReaderDetail.vue";
 import AppHeaderTemp from "@/components/admin/AppHeader.vue";
 import ReaderService from "@/services/admin/reader.service";
+import BackToTop from "@/components/admin/BackToTop.vue";
 
 export default {
   components: {
     ReaderDetail,
     AppHeaderTemp,
+    BackToTop,
   },
   data() {
     return {

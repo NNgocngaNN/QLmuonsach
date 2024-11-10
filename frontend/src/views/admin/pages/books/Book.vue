@@ -95,6 +95,8 @@
             </button>
           </div>
         </div>
+
+        <BackToTop />
       </div>
     </div>
   </div>
@@ -103,13 +105,15 @@
 
 <script>
 import BookDetail from "@/components/admin/BookDetail.vue";
-import AppHeaderTemp from "@/components/admin/AppHeader.vue";
+import AppHeader from "@/components/admin/AppHeader.vue";
 import BookService from "@/services/admin/book.service";
+import BackToTop from "@/components/admin/BackToTop.vue";
 
 export default {
   components: {
     BookDetail,
-    AppHeaderTemp,
+    AppHeader,
+    BackToTop,
   },
   data() {
     return {

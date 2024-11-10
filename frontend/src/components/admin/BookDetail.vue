@@ -14,7 +14,7 @@
       </div>
       <div class="p-1">
         <strong>Giá: </strong>
-        {{ book.price }} VNĐ
+        {{ book.price.toLocaleString() }} VNĐ
       </div>
       <div class="p-1">
         <strong>Số lượng: </strong>

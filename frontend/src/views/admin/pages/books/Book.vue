@@ -43,12 +43,16 @@
         <div class="col-md-12 mt-3">
           <div v-for="(book, index) in paginatedBooks" :key="book._id">
             <div
-              @click="activeIndex === index ? (activeIndex = -1) : (activeIndex = index)"
+              @click="
+                activeIndex === index
+                  ? (activeIndex = -1)
+                  : (activeIndex = index)
+              "
               class="book-item"
               :class="{ active: activeIndex === index }"
             >
               {{ book.bookTitle }}
-              
+
               <!-- Icon hiệu chỉnh và xóa -->
               <div class="book-actions">
                 <router-link
@@ -276,7 +280,6 @@ export default {
   box-shadow: 0 0 2.5px rgba(208, 1, 27, 0.5); /* Thêm hiệu ứng bóng nhẹ để làm nổi bật */
 }
 
-
 .item {
   padding-bottom: 10px;
 }
@@ -350,6 +353,10 @@ export default {
 }
 
 .book-item:hover {
+  color: #d0011b;
+}
+
+.book-item.active {
   color: #d0011b;
 }
 

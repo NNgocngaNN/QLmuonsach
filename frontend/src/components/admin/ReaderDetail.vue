@@ -1,6 +1,5 @@
 <template>
     <div>
-        <hr>
         <div class="p-1">
             <strong>Tên độc giả:</strong>
             {{ reader.fullName }}
@@ -17,7 +16,6 @@
             <strong>Số điện thoại:</strong>
             {{ reader.phone }}
         </div>
-        <hr>
         <!-- <div class="p-1">
             <strong>Sách đã mượn:</strong>
             <ul>

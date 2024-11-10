@@ -7,7 +7,7 @@ const adminRoutes = [
   {
     path: "/admin/books/reader",
     name: "reader",
-    component: () => import("@/views/admin/pages/books/ReaderTemp.vue"),
+    component: () => import("@/views/admin/pages/books/Reader.vue"),
   },
   {
     path: "/admin/books/:id",

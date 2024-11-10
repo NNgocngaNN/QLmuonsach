@@ -15,7 +15,7 @@ const readerSchema = new mongoose.Schema(
         id_book: String,
         status: {
           type: String,
-          default: "processing", //processing accepted refused returned
+          default: "processing",
         },
         borrowDate: String,
         returnDate: String,

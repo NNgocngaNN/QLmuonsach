@@ -1,20 +1,31 @@
 <template>
-  <nav class="navbar navbar-expand">
-    <div class="navbar-brand-container">
-        <a href="/admin/books">
-            <img src="../../img/logoWeb.png" alt="Logo" class="logo">
-        </a>  
-      <div class="mr-auto navbar-nav">
+  <header>
+    <div class="header-top">
+      <a href="/admin/books" class="logo-container">
+        <div class="logo-text">
+          <span class="book">BOOK</span><span class="store">STORE</span>
+        </div>
+      </a>
+      <div class="logout-container">
+        <button class="btn btn-danger button-logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <!-- Icon đăng xuất -->
+        </button>
+      </div>
+    </div>
+    <hr class="divider" />
+    <nav class="navbar">
+      <ul class="navbar-nav">
         <li class="nav-item">
           <router-link
             :to="{ name: 'book' }"
             class="nav-link"
-            :class="{ active: $route.name == 'book' }"
+            :class="{ active: $route.name === 'book' }"
           >
-            <h6><b>Quản lí kho sách</b></h6>
-            <i class="fa-solid fa-book"></i>
+            <h6>QUẢN LÍ KHO SÁCH</h6>
           </router-link>
         </li>
+
         <!-- <li class="nav-item">
           <router-link
             :to="{ name: 'borrow' }"
@@ -25,112 +36,135 @@
             <i class="fa-solid fa-book-reader"></i>
           </router-link>
         </li>-->
+
         <li class="nav-item">
           <router-link
             :to="{ name: 'reader' }"
             class="nav-link"
             :class="{ active: $route.name === 'reader' }"
           >
-            <h6><b>Quản lý người đọc</b></h6>
-            <i class="fa-solid fa-user"></i>
+            <h6>QUẢN LÍ NGƯỜI ĐỌC</h6>
           </router-link>
-        </li> 
-      </div>
-    </div>
-    <div class="logout-container">
-      <button class="btn btn-danger button-logout">Đăng xuất</button>
-    </div>
-  </nav>
+        </li>
+      </ul>
+    </nav>
+    <hr class="bottom-divider" />
+  </header>
 </template>
 
-<script>
-</script>
 
 <style scoped>
-.navbar-brand-container {
+.header-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 10px 50px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Bỏ gạch chân của logo */
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 8px 0; /* Đảm bảo không có gạch chân cho chữ */
+}
+
+.book {
+  color: white;
+  background-color: #d0011b;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.store {
+  color: #d0011b;
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
 }
 
 .logout-container {
-  margin-left: auto;
-  margin-right: 20px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
 }
 
-.navbar-brand {
-  margin-right: 20px;
-  margin-left: 10%;
+.divider {
+  height: 1px;
+  background-color: #ccc;
+  border: none;
+  margin: 0 10px;
+}
+
+.navbar {
+  padding: 12.5px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
 }
 
 .nav-item {
   display: flex;
-  width: auto;
-  flex-grow: 1;
-  margin-left: -60px;
+  align-items: center;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  margin-right: 15px;
-  position: relative;
+  padding: 8px 15px;
   border-radius: 10px;
-  background-color: #a3a09b;
+  color: black;
+  text-decoration: none;
   transition: all 0.2s linear;
 }
 
-.nav-link:hover {
-  color: white;
-  /* background-color: black; */
-  border-radius: 10px;
-  transform: scale(1.1);
-}
-
-.fa-book,
-.fa-book-reader,
-.fa-user {
-  margin-left: 8px;
-}
-
-.navbar-nav {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  gap: 10px;
-  width: 600px;
-}
-
-.logo,
-.logo img {
-  width: 300px;
-  margin-top: -20%;
-  margin-bottom: -63px;
-  margin-left: -100px;
-}
-
-.btn-danger {
-  margin-left: 15px;
-}
-
-.navbar-expand {
-  background-color: #a3a09b;
-  border-bottom: 2px solid rgb(100, 98, 98);
-}
-
+.nav-link:hover,
 .nav-link.active {
-  color: white;
+  color: #d0011b;
 }
 
-.nav-link.active::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: white;
+/* Đường phân cách cuối cùng */
+.bottom-divider {
+  height: 3px;
+  background-color: #d0011b;
+  border: none;
+  margin: 0;
+  opacity: 1;
+}
+
+/* Định dạng cho nút đăng xuất */
+.button-logout {
+  background-color: transparent; /* Không có màu nền */
+  border: none; /* Không có border */
+  color: #d0011b; /* Màu chữ */
+  padding: 8px 16px; /* Điều chỉnh padding */
+  font-size: 20px; /* Kích thước icon */
+  cursor: pointer; /* Đổi con trỏ khi hover */
+  transition: color 0.3s; /* Hiệu ứng chuyển màu chữ */
+}
+
+.button-logout:hover {
+  color: #a10015; /* Màu chữ khi hover */
+}
+
+.button-logout:focus {
+  outline: none; /* Loại bỏ viền focus */
+  background-color: transparent; /* Đảm bảo không có nền */
+}
+
+.button-logout i {
+  margin-right: 8px; /* Khoảng cách giữa icon và text */
 }
 </style>

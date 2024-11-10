@@ -1,114 +1,114 @@
 const Book = require("../../models/book.model");
-const ApiError = require("../../helpers/api-error");
-const asyncHandler = require("express-async-handler");
 const fs = require("fs");
-const upload = require("../../middlewares/admin/upload");
 const path = require("path");
 const fsx = require("fs-extra");
 
+// Tạo sách mới
 const createBook = async (req, res) => {
   try {
     const book = await Book.create({
       ...req.body,
-      thumbnail: req.file ? req.file.filename : null,
+      thumbnail: req.file ? req.file.filename : null, // Nếu có ảnh, lưu tên ảnh
     });
-    res.status(200).json({ message: "Sach da them thanh cong", book });
+    res.status(200).json({ message: "Sách đã thêm thành công", book });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// Lấy tất cả sách
 const getAll = async (req, res) => {
   try {
-    const book = await Book.find({});
-    res.status(200).json(book);
+    const books = await Book.find({});
+    res.status(200).json(books);
   } catch (error) {
-    res.status(500);
-    throw new Error(error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
+// Lấy sách theo ID
 const getOne = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
     if (!book) {
-      res
+      return res
         .status(404)
-        .json({ message: `Khong the tim kiem sach voi ID: ${req.params.id}` });
+        .json({ message: `Không tìm thấy sách với ID: ${req.params.id}` });
     }
     res.status(200).json(book);
   } catch (error) {
-    res.status(500);
-    throw new Error(error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
+// Cập nhật thông tin sách theo ID
 const updateOne = async (req, res) => {
   try {
     const bookId = req.params.id;
     const existingBook = await Book.findById(bookId);
 
+    // Kiểm tra xem sách có tồn tại hay không
     if (!existingBook) {
       return res
         .status(404)
-        .json({ message: `Khong the tim thay sach voi ID: ${bookId}` });
+        .json({ message: `Không tìm thấy sách với ID: ${bookId}` });
     }
 
-    //Kiem tra neu hinh anh moi duoc them vao
-    if (req.file) {
-      if (existingBook.thumbnail) {
-        // D:/qlmuonsach/backend/public/uploads/test1.jpg
-        const imagePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "public",
-          "uploads",
-          existingBook.thumbnail
-        );
-
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.error(`Loi xoa tep hinh anh cu${err}`);
-          } else {
-            console.log(`tep hinh anh cu da duoc xoa${existingBook.thumbnail}`);
-          }
-        });
-      }
-    }
-
-    const data = {
-      ...req.body,
-      thumbnail: req.file ? req.file.filename : existingBook.thumbnail,
-    };
-
-    const book = await Book.findByIdAndUpdate(bookId, data, { new: true });
-
-    if (!book) {
-      res
-        .status(404)
-        .json({ message: `Khong the tim kiem sach voi ID: ${req.params.id}` });
-    }
-    res.status(200).json({ message: "Sach da duoc cap nhat" });
-  } catch (error) {
-    res.status(500);
-    throw new Error(error.message);
-  }
-};
-
-const deleteOne = async (req, res) => {
-  try {
-    // Tìm và xóa sách dựa vào ID
-    const book = await Book.findByIdAndDelete(req.params.id);
-
-    // Nếu không tìm thấy sách, trả về lỗi 404
-    if (!book) {
-      return res.status(404).json({
-        message: `Khong the xoa sach voi ID: ${req.params.id}`,
+    // Nếu có ảnh mới, xóa ảnh cũ
+    if (req.file && existingBook.thumbnail) {
+      const oldImagePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "public",
+        "uploads",
+        existingBook.thumbnail
+      );
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.error(`Lỗi xóa ảnh cũ: ${err}`);
+        } else {
+          console.log(`Ảnh cũ đã được xóa: ${existingBook.thumbnail}`);
+        }
       });
     }
 
-    // Nếu sách có hình ảnh, tiến hành xóa hình ảnh
+    // Cập nhật thông tin sách
+    const updatedData = {
+      ...req.body,
+      thumbnail: req.file ? req.file.filename : existingBook.thumbnail, // Cập nhật ảnh nếu có
+    };
+
+    const updatedBook = await Book.findByIdAndUpdate(bookId, updatedData, {
+      new: true,
+    });
+
+    if (!updatedBook) {
+      return res
+        .status(404)
+        .json({ message: `Không tìm thấy sách với ID: ${bookId}` });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Sách đã được cập nhật", book: updatedBook });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Xóa sách theo ID
+const deleteOne = async (req, res) => {
+  try {
+    const book = await Book.findByIdAndDelete(req.params.id);
+
+    if (!book) {
+      return res
+        .status(404)
+        .json({ message: `Không thể xóa sách với ID: ${req.params.id}` });
+    }
+
+    // Nếu sách có ảnh, xóa ảnh liên quan
     if (book.thumbnail) {
       const imagePath = path.join(
         __dirname,
@@ -118,38 +118,37 @@ const deleteOne = async (req, res) => {
         "uploads",
         book.thumbnail
       );
-
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.error(`Loi khi xoa tep hinh anh: ${err}`);
+          console.error(`Lỗi khi xóa ảnh: ${err}`);
         } else {
-          console.log(`hinh anh da duoc xoa: ${book.thumbnail}`);
+          console.log(`Ảnh đã được xóa: ${book.thumbnail}`);
         }
       });
     }
 
-    // Trả về phản hồi thành công
-    res.status(200).json({ message: `Sach voi ID: ${req.params.id} da xoa` });
+    res
+      .status(200)
+      .json({ message: `Sách với ID: ${req.params.id} đã bị xóa` });
   } catch (error) {
-    // Xử lý lỗi và trả về phản hồi lỗi 500
-    res.status(500);
-    throw new Error(error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
+// Xóa tất cả sách
 const deleteAll = async (req, res) => {
   try {
     const result = await Book.deleteMany({});
     const uploadDir = path.join(__dirname, "..", "..", "public", "uploads");
 
+    // Xóa tất cả các tệp tin trong thư mục uploads
     await fsx.emptyDir(uploadDir);
 
     res
       .status(200)
-      .json({ message: `Da xoa ${result.deletedCount} quyen sach` });
+      .json({ message: `Đã xóa ${result.deletedCount} quyển sách` });
   } catch (error) {
-    res.status(500);
-    throw new Error(error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 

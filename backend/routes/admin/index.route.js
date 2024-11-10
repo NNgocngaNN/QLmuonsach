@@ -19,7 +19,7 @@ module.exports = (app) => {
   app.use(
     ADMIN_PATH + "/books",
     // Bảo vệ bằng middleware xác thực
-    //authMiddleware.authRequire,
+    authMiddleware.authRequire,
     bookRouter
   );
 

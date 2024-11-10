@@ -7,7 +7,7 @@
         </div>
       </a>
       <div class="logout-container">
-        <button class="btn btn-danger button-logout">
+        <button class="btn btn-danger button-logout" @click="logout">
           <i class="fas fa-sign-out-alt"></i>
           <!-- Icon đăng xuất -->
         </button>
@@ -51,6 +51,24 @@
   </header>
 </template>
 
+<script>
+import Authorization from "@/services/admin/authorization.service.js";
+export default {
+  computed: {},
+  name: "app-header-admin",
+  methods: {
+    async logout() {
+      // Xử lý đăng xuất ở đây
+      try {
+        const respone = await Authorization.logOut();
+        this.$router.push({ name: "login" });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+};
+</script>
 
 <style scoped>
 .header-top {

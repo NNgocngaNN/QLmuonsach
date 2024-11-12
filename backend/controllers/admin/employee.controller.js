@@ -65,8 +65,54 @@ const statusBook = async (req, res) => {
   }
 };
 
+const deleteBorrowedBook = async (req, res) => {
+  try {
+    const { readerId, bookId } = req.params;
+
+    // Kiểm tra xem reader có tồn tại không
+    const reader = await Reader.findById(readerId);
+    if (!reader) {
+      return res.status(404).json({ message: "Reader not found." });
+    }
+
+    // Tìm sách trong danh sách mượn của độc giả
+    const bookIndex = reader.borrow.findIndex(
+      (book) => book.id_book === bookId
+    );
+    if (bookIndex === -1) {
+      return res.status(404).json({ message: "Book not found." });
+    }
+
+    // Kiểm tra trạng thái của sách, nếu là 'returned' hoặc 'cancelled' thì xóa sách
+    if (
+      reader.borrow[bookIndex].status === "returned" ||
+      reader.borrow[bookIndex].status === "cancelled" ||
+      reader.borrow[bookIndex].status === "refused"
+    ) {
+      // Xóa sách khỏi danh sách mượn
+      reader.borrow.splice(bookIndex, 1);
+
+      // Lưu thay đổi vào CSDL
+      await reader.save();
+
+      // Trả về thông báo thành công
+      return res
+        .status(200)
+        .json({ message: "Borrowed book deleted successfully." });
+    } else {
+      return res.status(400).json({
+        message: "Only 'returned' or 'cancelled' books can be deleted.",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   getInfor,
   getReaders,
   statusBook,
+  deleteBorrowedBook,
 };

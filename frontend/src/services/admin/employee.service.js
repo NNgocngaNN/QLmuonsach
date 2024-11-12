@@ -24,6 +24,16 @@ class EmployeeService {
       throw error;
     }
   }
+
+  // Phương thức gọi API để xóa sách đã mượn
+  async deleteBorrowedBook(readerId, bookId) {
+    try {
+      const response = await this.api.delete(`/borrow/${readerId}/${bookId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new EmployeeService();

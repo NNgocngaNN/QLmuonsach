@@ -339,6 +339,11 @@ export default {
   transition: all 0.3s ease; /* Hiệu ứng chuyển động mượt mà */
 }
 
+.pagination-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 .pagination-container button:hover {
   background-color: #bb2d3b; /* Đổi nền khi hover */
   color: white; /* Chữ và icon sẽ đổi thành màu trắng khi hover */
@@ -385,4 +390,6 @@ export default {
 .book-item.active + .book-detail {
   display: block;
 }
+
+
 </style>

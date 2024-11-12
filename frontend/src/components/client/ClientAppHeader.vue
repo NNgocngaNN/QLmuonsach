@@ -36,9 +36,9 @@
 
         <li class="nav-item">
           <!-- <router-link
-            :to="{ name: 'borrow-client' }"
+            :to="{ name: 'account' }"
             class="nav-link"
-            :class="{ active: $route.name === 'borrow-client' }"
+            :class="{ active: $route.name === 'account' }"
           > -->
             <h6>TÀI KHOẢN CỦA TÔI</h6>
           <!-- </router-link> -->

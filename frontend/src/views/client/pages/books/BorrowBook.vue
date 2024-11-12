@@ -1,249 +1,273 @@
 <template>
-    <div>
-        <ClientAppHeader />
-        <div class="container mt-3">
-            <h3 class="name"><b>Danh Sách Sách Đã Mượn</b></h3>
-            <template v-if="reader.borrow && reader.borrow.length > 0">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <!-- <th>Ảnh sách</th> -->
-                            <th>Tên sách</th>
-                            <th>Số lượng</th>
-                            <th>Ngày mượn</th>
-                            <th>Ngày trả</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(borrowedBook, index) in reader.borrow" :key="borrowedBook._id">
-                            <td>{{ index + 1 }}</td>
-                            <!-- <td>
-                  <img
-                    :src="getBookImage(borrowedBook.id_book)"
-                    alt="Book image"
-                    width="100"
-                  />
-                </td> -->
-                            <td>{{ getBookName(borrowedBook.id_book) }}</td>
-                            <td>{{ borrowedBook.quantity }}</td>
-                            <td>{{ borrowedBook.borrowDate }}</td>
-                            <td>{{ borrowedBook.returnDate }}</td>
-                            <td class="text-primary">
-                                {{ borrowedBook.status === 'accepted' ? 'Đã duyệt' : borrowedBook.status === 'refused' ?
-                                    'Từ chối' :
-                                    borrowedBook.status === 'returned' ? 'Đã trả' : borrowedBook.status === 'processing' ?
-                                        'Chờ xử lí' :
-                                        'Unknown' }}
-                            </td>
-                            <td>
-                                <button v-if="canReturn(borrowedBook.status)" class="btn btn-danger"
-                                    @click="statusBookReturn(reader, borrowedBook, 'returned')">
-                                    Trả
-                                </button>
-                                <button v-if="canDelete(borrowedBook.status)" class="btn btn-danger"
-                                    @click="deleteBook(borrowedBook.id_book)">
-                                    Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </template>
-            <template v-else>
-                <p><i>Bạn chưa có đăng ký đơn mượn nào.</i></p>
-            </template>
+  <div>
+    <ClientAppHeader />
+    <div class="container mt-3">
+      <h6 class="name">Danh Sách Sách Đã Mượn</h6>
+      <template v-if="reader.borrow && reader.borrow.length > 0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Tên sách</th>
+              <th>Số lượng</th>
+              <th>Ngày mượn</th>
+              <th>Ngày trả</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(borrowedBook, index) in paginatedBooks"
+              :key="borrowedBook._id"
+            >
+              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+              <td style="text-align: left">
+                {{ getBookName(borrowedBook.id_book) }}
+              </td>
+              <td>{{ borrowedBook.quantity }}</td>
+              <td>{{ borrowedBook.borrowDate }}</td>
+              <td>{{ borrowedBook.returnDate }}</td>
+              <td class="text-primary">
+                {{
+                  borrowedBook.status === "accepted"
+                    ? "Đã duyệt"
+                    : borrowedBook.status === "refused"
+                    ? "Từ chối"
+                    : borrowedBook.status === "returned"
+                    ? "Đã trả"
+                    : borrowedBook.status === "processing"
+                    ? "Chờ xử lí"
+                    : borrowedBook.status === "cancelled"
+                    ? "Đã huỷ"
+                    : "Unknown"
+                }}
+              </td>
+              <td>
+                <button
+                  v-if="canReturn(borrowedBook.status)"
+                  class="btn btn-danger"
+                  @click="statusBookReturn(reader, borrowedBook, 'returned')"
+                >
+                  Trả
+                </button>
+                <button
+                  v-if="canDelete(borrowedBook.status)"
+                  class="btn btn-danger"
+                >
+                  
+                </button>
+                <button
+                  v-if="canReturnprocessing(borrowedBook.status)"
+                  class="btn btn-danger"
+                  @click="statusBookReturn(reader, borrowedBook, 'cancelled')"
+                >
+                  Huỷ yêu cầu
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Nút điều khiển phân trang -->
+        <div class="pagination mt-4">
+          <button
+            @click="goToPage(currentPage - 1)"
+            :disabled="currentPage === 1"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+          <button
+            @click="goToPage(currentPage + 1)"
+            :disabled="currentPage === totalPages"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
+      </template>
+      <template v-else>
+        <p style="text-align: center">
+          <i>Bạn chưa có đăng ký đơn mượn nào.</i>
+        </p>
+      </template>
     </div>
+  </div>
 </template>
 
 <script>
-import ClientBookDetail from "@/components/client/ClientBookDetail.vue";
 import ClientAppHeader from "@/components/client/ClientAppHeader.vue";
-import ClientInputSearch from "@/components/client/ClientInputSearch.vue";
-import ClientBookList from "@/components/client/ClientBookList.vue";
 import BookService from "@/services/client/book.service";
 import readerService from "@/services/client/reader.service";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export default {
-    components: {
-        ClientBookDetail,
-        ClientInputSearch,
-        ClientBookList,
-        ClientAppHeader,
+  components: {
+    ClientAppHeader,
+  },
+  data() {
+    return {
+      books: [],
+      activeIndex: -1,
+      searchText: "",
+      token: "",
+      reader: {},
+      currentPage: 1,
+      itemsPerPage: 10, // Số mục trên mỗi trang
+    };
+  },
+  computed: {
+    // Chỉ lấy các sách thuộc trang hiện tại
+    paginatedBooks() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.reader.borrow.slice(start, end);
     },
-    // Đoạn mã xử lý đầy đủ sẽ trình bày bên dưới
-    data() {
-        return {
-            books: [],
-            activeIndex: -1,
-            searchText: "",
-            token: "",
-            reader: {},
-        };
+    totalPages() {
+      return Math.ceil(this.reader.borrow.length / this.itemsPerPage);
     },
-    watch: {
-        // Giám sát các thay đổi của biến searchText.
-        // Bỏ chọn phần tử đang được chọn trong danh sách.
-        searchText() {
-            this.activeIndex = -1;
-        },
+  },
+  methods: {
+    async retrieveBooks() {
+      try {
+        this.books = await BookService.getAll();
+      } catch (error) {
+        console.log(error);
+      }
     },
-    computed: {
-        // Chuyển các đối tượng book thành chuỗi để tiện cho tìm kiếm.
-        booksStrings() {
-            return this.books.map((book) => {
-                const {
-                    bookTitle,
-                    price,
-                    quantity,
-                    publishYear,
-                    author,
-                    thumbnail,
-                } = book;
-                return [
-                    bookTitle,
-                    price,
-                    quantity,
-                    publishYear,
-                    author,
-                    thumbnail,
-                ].join("");
-            });
-        },
-        // Trả về các book có chứa thông tin cần tìm kiếm.
-        filteredBooks() {
-            if (!this.searchText) return this.books;
+    async retrieveReaders() {
+      try {
+        const token = Cookies.get("tokenUser");
+        this.token = token;
+        let formData = new FormData();
+        formData.append("tokenUser", token);
+        this.reader = await readerService.getUserByToken(formData);
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin độc giả:", error);
+      }
+    },
+    async statusBookReturn(reader, borrowedBook, status) {
+      try {
+        await readerService.statusBookReturn(
+          reader._id,
+          borrowedBook.id_book,
+          status
+        );
+        await this.retrieveReaders();
+        await this.retrieveBooks();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getBookName(bookId) {
+      const book = this.books.find((book) => book._id === bookId);
+      return book ? book.bookTitle : "Unknown";
+    },
+    canDelete(status) {
+      return (
+        status === "refused" || status === "returned" || status === "cancelled"
+      );
+    },
+    canReturn(status) {
+      return status === "accepted";
+    },
 
-            return this.books.filter((_book, index) =>
-                this.booksStrings[index].includes(this.searchText)
-            );
-        },
-        activeBook() {
-            if (this.activeIndex < 0) return null;
-            return this.filteredBooks[this.activeIndex];
-        },
-        filteredBooksCount() {
-            return this.filteredBooks.length;
-        },
+    canReturnprocessing(status) {
+      return status === "processing";
     },
-    methods: {
-        async retrieveBooks() {
-            try {
-                this.books = await BookService.getAll();
-            } catch (error) {
-                console.log(error);
-            }
-        },
-        async retrieveReaders() {
-            try {
-                const token = Cookies.get('tokenUser');
-                this.token = token;
-                let formData = new FormData();
-                formData.append("tokenUser", token);
-                // Lấy danh sách borrows từ readerService
-                this.reader = await readerService.getUserByToken(formData);
-            } catch (error) {
-                console.error('Lỗi khi lấy thông tin doc gia:', error);
-                // Có thể hiển thị thông báo lỗi trên UI nếu cần
-            }
-        },
-        async statusBookReturn(reader, borrowedBook, status) {
-            try {
-                const response = await readerService.statusBookReturn(
-                    reader._id,
-                    borrowedBook.id_book,
-                    status
-                );
-                // Refresh data after changing status
-                await this.retrieveReaders();
-                await this.retrieveBooks();
-            } catch (error) {
-                console.log(error);
-            }
-        },
 
-        getBookName(bookId) {
-            const book = this.books.find((book) => book._id === bookId);
-            return book ? book.bookTitle : "Unknown";
-        },
-        canDelete(status) {
-            return status === "processing" || status === "refused" || status === "returned";
-        },
-        canReturn(status) {
-            return status === "accepted";
-        },
-        async deleteBook(id) {
-            const respone = await readerService.returnBookBorrow(id);
-            this.retrieveBooks();
-            this.retrieveReaders();
-        },
-        refreshList() {
-            this.retrieveBooks();
-            this.searchText = "";
-            this.activeIndex = -1;
-        },
+    async deleteBook(id) {
+      await readerService.returnBookBorrow(id);
+      this.retrieveReaders();
     },
-    mounted() {
-        this.retrieveBooks();
-        this.retrieveReaders();
-        this.refreshList();
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
     },
+  },
+  mounted() {
+    this.retrieveBooks();
+    this.retrieveReaders();
+  },
 };
 </script>
 
 <style scoped>
-.page {
-    text-align: left;
-}
-
-.custom-margin {
-    margin-right: 10px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .name {
-    text-align: center;
-    color: red;
-    font-style: italic;
-    margin-bottom: 10px;
+  text-align: center;
+  color: #000;
+  margin-bottom: 20px;
+  font-size: 28px;
 }
 
 .table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
 }
 
 th {
-    background-color: #c5c3c3;
-    color: black;
+  background-color: #d0011b;
+  color: white;
 }
 
 tr:hover {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 td button {
-    margin-right: 5px;
+  margin-right: 5px;
+  background-color: #fff;
+  color: #d0011b;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-td:nth-child(2) {
-    /*nth-child để chọn cột thứ 2 (tính từ 1) */
-    text-align: left;
-    width: 30%;
+td button:hover {
+  color: #b10017;
+  background-color: #fff;
 }
 
-td:nth-child(3) {
-    width: 7%;
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.pagination button {
+  background-color: #d0011b;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 14px;
 }
 </style>

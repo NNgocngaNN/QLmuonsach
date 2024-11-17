@@ -22,4 +22,8 @@ router.delete("/return/:id", controller.deleteBookFromBorrow);
 // Lấy số lượng sách đã được mượn của một đầu sách cụ thể
 router.get("/numberbookborrowed/:id_book", controller.getNumberBookBorrowed);
 
+router.get("/userinfor", controller.getInforUserByToken);
+
+router.put('/:token', controller.updateUser);
+
 module.exports = router;

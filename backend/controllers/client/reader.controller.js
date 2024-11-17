@@ -227,6 +227,101 @@ const getNumberBookBorrowed = async (req, res) => {
   }
 };
 
+const getInforUserByToken = async (req, res) => {
+  try {
+    // Kiểm tra xem header Authorization có tồn tại hay không
+    if (
+      !req.headers.authorization ||
+      !req.headers.authorization.startsWith("Bearer ")
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Authorization token missing or malformed" });
+    }
+
+    // Tách token từ header Authorization
+    const tokenUser = req.headers.authorization.split(" ")[1];
+
+    // Tìm người dùng với token
+    const reader = await Reader.findOne({ token: tokenUser });
+
+    if (!reader) {
+      return res.status(404).json({ message: "Reader not found" });
+    }
+
+    res.status(200).json({ message: "Send reader successfully.", reader });
+  } catch (error) {
+    res.status(500).json({ message: `Error! ${error}` });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { token } = req.params; // Lấy token từ URL
+    const { fullName, email, phone, address } = req.body; // Lấy thông tin cần cập nhật từ body request
+
+    // Kiểm tra xem token có hợp lệ không (ví dụ, kiểm tra token trong cơ sở dữ liệu)
+    const user = await Reader.findOne({ token }); // Tìm người dùng dựa trên token
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Kiểm tra email đã tồn tại chưa (ngoại trừ email của người dùng hiện tại)
+    if (email) {
+      const emailExists = await Reader.findOne({
+        email,
+        _id: { $ne: user._id },
+      }); // Tìm người dùng khác có email này
+      if (emailExists) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      user.email = email; // Cập nhật email nếu không có vấn đề
+    }
+
+    // Kiểm tra số điện thoại đã tồn tại chưa (ngoại trừ số điện thoại của người dùng hiện tại)
+    if (phone) {
+      const phoneExists = await Reader.findOne({
+        phone,
+        _id: { $ne: user._id },
+      }); // Tìm người dùng khác có số điện thoại này
+      if (phoneExists) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
+      user.phone = phone; // Cập nhật số điện thoại nếu không có vấn đề
+    }
+
+    // Cập nhật các thông tin khác (nếu có)
+    if (fullName) user.fullName = fullName;
+    if (address) user.address = address;
+
+    // Lưu thay đổi vào cơ sở dữ liệu
+    await user.save();
+
+    // Trả về phản hồi thành công
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        // Bạn có thể trả thêm các thông tin khác nếu cần
+      },
+    });
+  } catch (error) {
+    // Xử lý lỗi nếu có
+    console.error("Error updating user:", error);
+    return res
+      .status(500)
+      .json({
+        message: "An error occurred while updating the user",
+        error: error.message,
+      });
+  }
+};
+
+
 module.exports = {
   create,
   getUser,
@@ -235,4 +330,6 @@ module.exports = {
   deleteBookFromBorrow,
   statusBookReturn,
   getNumberBookBorrowed,
+  getInforUserByToken,
+  updateUser,
 };

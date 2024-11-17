@@ -23,6 +23,13 @@ const clientRoutes = [
   },
 
   {
+    path: "/account",
+    name: "account",
+    component: () => import("@/views/client/pages/books/ClientAccount.vue"),
+    beforeEnter: requireClientAuth,
+  },
+
+  {
     path: "/books/:id",
     name: "book.detail",
     component: () => import("@/components/client/ClientBookDetail.vue"),

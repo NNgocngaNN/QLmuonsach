@@ -1,7 +1,7 @@
 <template>
   <div>
     <ClientAppHeader />
-    <div class="container mt-3">
+    <div class="container mt-3 mb-3">
       <h6 class="name">Danh Sách Sách Đã Mượn</h6>
       <template v-if="reader.borrow && reader.borrow.length > 0">
         <table class="table">
@@ -92,11 +92,13 @@
         </p>
       </template>
     </div>
+    <ClientAppFooter />
   </div>
 </template>
 
 <script>
 import ClientAppHeader from "@/components/client/ClientAppHeader.vue";
+import AppFooter from "@/components/client/ClientAppFooter.vue";
 import BookService from "@/services/client/book.service";
 import readerService from "@/services/client/reader.service";
 import Cookies from "js-cookie";
@@ -104,6 +106,7 @@ import Cookies from "js-cookie";
 export default {
   components: {
     ClientAppHeader,
+    AppFooter,
   },
   data() {
     return {
@@ -113,7 +116,7 @@ export default {
       token: "",
       reader: {},
       currentPage: 1,
-      itemsPerPage: 10, // Số mục trên mỗi trang
+      itemsPerPage: 15, // Số mục trên mỗi trang
     };
   },
   computed: {
@@ -196,6 +199,8 @@ export default {
 <style scoped>
 .container {
   max-width: 1200px;
+  /* min-height: 547.5px; */
+  min-height: 459px;
   margin: 0 auto;
   padding-top: 10px;
   padding-bottom: 10px;

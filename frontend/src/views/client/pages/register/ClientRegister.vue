@@ -2,9 +2,13 @@
   <div class="login-page">
     <div class="container">
       <div class="login-header">
-        <h2>Đăng kí</h2>
+        <h2>Cập nhật thông tin tài khoản</h2>
       </div>
-      <form @submit.prevent="add" action="" class="form">
+      <form @submit.prevent="update" class="form">
+        <!-- Global Error Message -->
+        <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
+
+        <!-- Full Name -->
         <div class="form-item">
           <label class="label" for="fullName">Họ và Tên:</label><br />
           <input
@@ -14,39 +18,37 @@
             placeholder="Nhập Họ và Tên"
             v-model="formData.fullName"
           />
+          <p v-if="errors.fullName" class="error-text">{{ errors.fullName }}</p>
         </div>
+
+        <!-- Email (disabled) -->
         <div class="form-item">
           <label class="label" for="email">Email:</label><br />
           <input
             class="input"
             type="email"
             id="email"
-            placeholder="Nhập email "
+            placeholder="Nhập email"
             v-model="formData.email"
+            disabled
           />
-        </div>
-        <div class="form-item">
-          <label class="label" for="password">Mật khẩu:</label><br />
-          <input
-            class="input"
-            type="password"
-            id="password"
-            placeholder="Nhập mật khẩu"
-            v-model="formData.password"
-          />
+          <p v-if="errors.email" class="error-text">{{ errors.email }}</p>
         </div>
 
+        <!-- Address -->
         <div class="form-item">
           <label class="label" for="address">Địa chỉ:</label><br />
           <input
             class="input"
             type="text"
             id="address"
-            placeholder="Nhập địa chỉ "
+            placeholder="Nhập địa chỉ"
             v-model="formData.address"
           />
+          <p v-if="errors.address" class="error-text">{{ errors.address }}</p>
         </div>
 
+        <!-- Phone -->
         <div class="form-item">
           <label class="label" for="phone">Số điện thoại:</label><br />
           <input
@@ -56,22 +58,22 @@
             placeholder="Nhập số điện thoại"
             v-model="formData.phone"
           />
+          <p v-if="errors.phone" class="error-text">{{ errors.phone }}</p>
         </div>
-        <button type="submit" class="btn btn-primary">Đăng kí</button>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
       </form>
     </div>
   </div>
 </template>
+
 <script>
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-import ClientAppHeader from "@/components/client/ClientAppHeader.vue";
-import ReaderService from "@/services/client/reader.service";
+import ReaderService from "@/services/client/reader.service"; // Service API để cập nhật thông tin
 
 export default {
-  components: {
-    ClientAppHeader,
-  },
   data() {
     return {
       formData: {
@@ -81,49 +83,85 @@ export default {
         address: "",
         phone: "",
       },
+      errors: {
+        fullName: "",
+        email: "",
+        password: "",
+        address: "",
+        phone: "",
+      },
+      errorMessage: "", // Global error message
     };
   },
-
-  computed: {},
-
+  mounted() {
+    this.getUserDetails(); // Khi component được mount, lấy thông tin người dùng
+  },
   methods: {
-    async add() {
+    // Lấy thông tin người dùng để hiển thị
+    async getUserDetails() {
       try {
-        if (
-          !this.formData.fullName ||
-          !this.formData.email ||
-          !this.formData.password
-        ) {
-          toast.error("Please fill in all required fields.", {
-            autoClose: 3000,
-          });
-          return;
+        const response = await ReaderService.getUserDetails(); // Gọi API để lấy thông tin người dùng
+        this.formData = response.data; // Gán dữ liệu lấy được vào formData
+      } catch (error) {
+        console.log("Lỗi khi lấy thông tin người dùng:", error);
+        this.errorMessage = "Không thể lấy thông tin người dùng.";
+      }
+    },
+
+    // Hàm cập nhật thông tin người dùng
+    async update() {
+      // Reset lỗi
+      this.errors.fullName = "";
+      this.errors.email = "";
+      this.errors.address = "";
+      this.errors.phone = "";
+      this.errorMessage = "";
+
+      // Validate các trường
+      if (!this.formData.fullName) {
+        this.errors.fullName = "Vui lòng nhập Họ và Tên";
+      }
+      if (!this.formData.address) {
+        this.errors.address = "Vui lòng nhập địa chỉ";
+      }
+      if (!this.formData.phone) {
+        this.errors.phone = "Vui lòng nhập số điện thoại";
+      }
+
+      // Nếu có lỗi, dừng lại
+      if (
+        this.errors.fullName ||
+        this.errors.address ||
+        this.errors.phone
+      ) {
+        return;
+      }
+
+      try {
+        // Gọi API cập nhật thông tin người dùng
+        const response = await ReaderService.updateUser(this.formData);
+
+        if (response.success) {
+          // Nếu thành công, hiển thị thông báo và chuyển trang
+          toast.success("Cập nhật thông tin thành công!", { autoClose: 1200 });
+          setTimeout(() => {
+            this.$router.push({ name: "profile" }); // Chuyển đến trang thông tin cá nhân
+          }, 800);
+        } else {
+          toast.error(response.error || "Có lỗi xảy ra khi cập nhật!", { autoClose: 3000 });
         }
-
-        const formData = new FormData();
-        formData.append("fullName", this.formData.fullName);
-        formData.append("email", this.formData.email);
-        formData.append("password", this.formData.password);
-        formData.append("address", this.formData.address);
-        formData.append("phone", this.formData.phone);
-
-        const response = await ReaderService.createUser(this.formData);
-        toast.success("Added successfully!", {
-          autoClose: 1200,
-        });
-
-        setTimeout(() => {
-          this.$router.push({ name: "login-client" });
-        }, 800);
       } catch (error) {
         console.log(error);
-        const errorMessage = error.response?.data?.error || "Error!";
-        toast.error(errorMessage, { autoClose: 3000 });
+        // Xử lý lỗi từ server
+        this.errorMessage = error.response?.data?.message || "Có lỗi xảy ra!";
+        toast.error(this.errorMessage, { autoClose: 3000 });
       }
     },
   },
 };
 </script>
+
+
 <style scoped>
 /* Cấu trúc tổng thể của trang đăng nhập */
 .login-page {

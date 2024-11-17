@@ -78,11 +78,39 @@ class ReaderService {
     }
   }
 
+  async getInforUserByToken(formData) {
+    try {
+      // Lấy token từ đối tượng formData
+      const token = formData.token; // Đảm bảo bạn truyền token theo đúng cách
+
+      const { reader } = (
+        await this.apiClient.get(`/userinfor`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      ).data;
+
+      return reader;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateUser(userId, userData) {
     try {
       const response = await this.apiClient.put(`/${userId}`, userData);
       return response.data;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  // Kiểm tra và đảm bảo base URL đúng
+  async updateUserByToken(token, userData) {
+    try {
+      const response = await this.apiClient.put(`/${token}`, userData); // Đảm bảo `/api/reader/update` là đúng
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user details:", error);
       throw error;
     }
   }

@@ -35,13 +35,13 @@
         </li>
 
         <li class="nav-item">
-          <!-- <router-link
+          <router-link
             :to="{ name: 'account' }"
             class="nav-link"
             :class="{ active: $route.name === 'account' }"
-          > -->
+          >
             <h6>TÀI KHOẢN CỦA TÔI</h6>
-          <!-- </router-link> -->
+          </router-link>
         </li>
       </ul>
     </nav>

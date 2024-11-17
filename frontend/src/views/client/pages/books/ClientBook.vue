@@ -76,33 +76,14 @@
         <BackToTop />
       </div>
     </div>
-
-    <div
-      style="background: linear-gradient(to right, #fbfbfb, #fbfbfb, #fbfbfb)"
-    >
-      <hr class="bottom-divider" />
-      <footer>
-        <div class="footer-container">
-          <div class="footer-info">
-            <h5>BOOK STORE</h5>
-            <p>Địa chỉ: Khu II, Đ. 3 Tháng 2, Xuân Khánh, Ninh Kiều, Cần Thơ</p>
-            <p>Email: ngocngan@sinhvien.vn</p>
-            <p>Điện thoại: 0123 456 789</p>
-          </div>
-          <div class="footer-links" style="color: #1f763b">
-            <a href="#">Trang chủ</a>
-            <a href="#">Sách đã mượn</a>
-            <a href="#">Tài khoản của tôi</a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <ClientAppFooter />
   </div>
 </template>
 
 <script>
 import BookDetail from "@/components/client/ClientBookDetail.vue";
 import AppHeader from "@/components/client/ClientAppHeader.vue";
+import AppFooter from "@/components/client/ClientAppFooter.vue";
 import BookService from "@/services/client/book.service";
 import BackToTop from "@/components/client/BackToTop.vue";
 import axios from "axios";
@@ -111,6 +92,7 @@ export default {
   components: {
     BookDetail,
     AppHeader,
+    AppFooter,
     BackToTop,
     async get(bookId) {
       return (await axios.get(`/api/books/${bookId}`)).data;
@@ -373,62 +355,5 @@ export default {
 .sort-select:focus {
   border-color: #d0011b; /* Đổi màu viền khi nhấn vào ô chọn */
   box-shadow: 0 0 2px rgba(208, 1, 27, 0.5); /* Thêm hiệu ứng bóng nhẹ để làm nổi bật */
-}
-
-/* footer */
-.bottom-divider {
-  margin: 0 10px;
-}
-
-footer {
-  padding: 20px 0;
-  text-align: center;
-}
-
-.footer-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.footer-info h5 {
-  margin: 0;
-  font-size: 1.7em;
-}
-
-.footer-info h3 {
-  margin: 0;
-  font-size: 1.5em;
-}
-
-.footer-info p {
-  margin: 5px 0;
-}
-
-.footer-links {
-  display: flex;
-  gap: 15px;
-}
-
-.footer-links a {
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.footer-links a:hover {
-  color: #3498db;
-}
-
-.footer-links a {
-  color: #d0011b;
-  /* màu mặc định */
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  color: #b02a37;
-  /* màu xanh lá sáng hơn khi hover */
 }
 </style>

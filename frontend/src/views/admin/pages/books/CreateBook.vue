@@ -123,36 +123,89 @@ export default {
 
 <style scoped>
 .container {
-  width: 80%;
   width: 500px;
-  height: 750px;
+  height: auto;
   text-align: center;
   padding: 20px;
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* Màu nền trắng giúp làm nổi bật */
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  margin: 30px auto;
 }
 
 .add-new {
-  font-size: 30px;
+  text-align: center;
+  color: #d0011b;
   margin-bottom: 20px;
+  font-size: 28px;
 }
 
 .form-item {
   text-align: left;
-  padding: 10px;
+  margin-bottom: 15px;
 }
 
 .label {
   font-weight: bold;
+  color: #333333;
+  font-size: 16px;
 }
 
 .input {
   width: 100%;
-  /* height: 40px; */
-  padding: 10px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
   border-radius: 5px;
+  font-size: 14px;
+  color: #333333;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.input:focus {
+  border-color: #d0011b;
+  outline: none;
+  box-shadow: 0 0 5px rgba(208, 1, 27, 0.2); /* Hiệu ứng tập trung */
+}
+
+input[type="file"] {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  margin-top: 20px;
+  background-color: #d0011b;
+  border: 1px solid #d0011b;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+.btn-primary:hover {
+  background-color: #a00016;
+  transform: translateY(-1px); /* Hiệu ứng nổi nhẹ */
+  box-shadow: 0 3px 6px rgba(208, 1, 27, 0.2); /* Tăng đổ bóng khi hover */
+}
+
+.btn-primary:active {
+  background-color: #8a0013;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Quay lại đổ bóng nhẹ khi click */
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+
+  .add-new {
+    font-size: 28px;
+  }
 }
 </style>

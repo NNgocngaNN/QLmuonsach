@@ -32,37 +32,42 @@ const getReaders = async (req, res) => {
 
 // Cập nhật trạng thái của sách mà người đọc đang mượn
 const statusBook = async (req, res) => {
-  try {
-    const { readerId, bookId } = req.params; // Lấy ID người đọc và ID sách từ tham số URL
-    const { status } = req.body; // Lấy trạng thái từ body yêu cầu
+   try {
+     // Lấy thông tin từ request
+     const { readerId, bookId } = req.params;
+     const { status } = req.body;
+     // Kiểm tra xem reader và book có tồn tại không
+     const reader = await Reader.findById(readerId);
+     if (!reader) {
+       res.status(404).json({ message: "Reader not found." });
+       return;
+     }
+     const bookIndex = reader.borrow.findIndex(
+       (book) => book.id_book === bookId
+     );
+     if (bookIndex === -1) {
+       res.status(404).json({ message: "Book not found." });
+       return;
+     }
+     console.log("bookIndex", bookIndex);
+     // Thay đổi trạng thái sách
+     reader.borrow[bookIndex].status = status;
 
-    // Tìm người đọc theo ID
-    const reader = await Reader.findById(readerId);
-    if (!reader) {
-      return res.status(404).json({ message: "Người đọc không tồn tại." }); // Nếu không tìm thấy người đọc
-    }
+     // Nếu trạng thái là "đã trả", giảm quantity đi 1
+     if (status === "refused") {
+       // Giảm quantity đi 1, nhưng không thay đổi initialQuantity
+       reader.borrow[bookIndex].quantity -= 1;
+     }
 
-    // Tìm sách trong danh sách mượn của người đọc
-    const bookIndex = reader.borrow.findIndex(
-      (book) => book.id_book === bookId
-    );
-    if (bookIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Sách không tồn tại trong danh sách mượn." }); // Nếu không tìm thấy sách
-    }
+     // // Lưu thay đổi vào CSDL
+     await reader.save();
 
-    // Cập nhật trạng thái của sách
-    reader.borrow[bookIndex].status = status;
-    await reader.save(); // Lưu thông tin người đọc với trạng thái sách đã được cập nhật
-
-    // Trả về phản hồi thành công
-    res
-      .status(200)
-      .json({ message: "Trạng thái sách đã được cập nhật thành công." });
-  } catch (error) {
-    res.status(500).json({ error: error.message }); 
-  }
+     // Trả về thông báo thành công
+     res.status(200).json({ message: "Status updated successfully." });
+   } catch (error) {
+     res.status(500);
+     throw new Error(error.message);
+   }
 };
 
 const deleteBorrowedBook = async (req, res) => {

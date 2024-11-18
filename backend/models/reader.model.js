@@ -24,6 +24,11 @@ const readerSchema = new mongoose.Schema(
           default: 1,
           require: true,
         },
+        initialQuantity: {
+          type: Number,
+          default: 1,
+          require: true,
+        },
       },
     ],
     deleted: {

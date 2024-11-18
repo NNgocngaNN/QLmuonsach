@@ -37,7 +37,7 @@
                 <td style="text-align: left">
                   {{ getBookName(borrowedBook.id_book) }}
                 </td>
-                <td>{{ borrowedBook.quantity }}</td>
+                <td>{{ borrowedBook.initialQuantity }}</td>
                 <td>{{ borrowedBook.borrowDate }}</td>
                 <td>{{ borrowedBook.returnDate }}</td>
                 <td class="text-primary">
@@ -97,6 +97,8 @@
           </table>
         </template>
       </div>
+
+      <BackToTop />
     </div>
   </div>
 </template>

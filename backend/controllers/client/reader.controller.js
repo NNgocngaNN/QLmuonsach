@@ -169,18 +169,17 @@ const deleteBookFromBorrow = async (req, res) => {
 // Cập nhật trạng thái trả sách
 const statusBookReturn = async (req, res) => {
   try {
-    // Lấy ID người dùng và ID sách từ request, trạng thái mới từ body
+    // Lấy thông tin từ request
     const { readerId, bookId } = req.params;
     const { status } = req.body;
 
-    // Tìm kiếm người dùng trong cơ sở dữ liệu
+    // Kiểm tra xem reader và book có tồn tại không
     const reader = await Reader.findById(readerId);
     if (!reader) {
       res.status(404).json({ message: "Reader not found." });
       return;
     }
 
-    // Kiểm tra xem sách có trong danh sách mượn của người dùng không
     const bookIndex = reader.borrow.findIndex(
       (book) => book.id_book === bookId
     );
@@ -189,14 +188,24 @@ const statusBookReturn = async (req, res) => {
       return;
     }
 
-    // Cập nhật trạng thái của sách
+    console.log("bookIndex", bookIndex);
+
+    // Thay đổi trạng thái sách
     reader.borrow[bookIndex].status = status;
+
+    // Nếu trạng thái là "đã trả", giảm quantity đi 1
+    if (status === "returned" || status === "refused") {
+      // Giảm quantity đi 1, nhưng không thay đổi initialQuantity
+      reader.borrow[bookIndex].quantity -= 1;
+    }
+
+    // Lưu thay đổi vào CSDL
     await reader.save();
 
+    // Trả về thông báo thành công
     res.status(200).json({ message: "Status updated successfully." });
   } catch (error) {
-    // Xử lý lỗi khi không thể cập nhật trạng thái
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: `Error! ${error}` });
   }
 };
 

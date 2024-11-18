@@ -2,7 +2,7 @@
   <div>
     <AppHeader />
     <div class="container mt-3">
-      <div class="add-new">Hiệu chỉnh đầu sách</div>
+      <div class="add-new"><b>Hiệu chỉnh sách</b></div>
       <div class="form">
         <form @submit.prevent="updateBook()">
           <div class="form-item">
@@ -171,36 +171,88 @@ export default {
 
 <style scoped>
 .container {
-  width: 80%;
-  width: 60%;
-  height: 850px;
+  width: 500px;
   text-align: center;
-  /* margin-top: 10px; */
-  background-color: #f5f5f5;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background-color: #ffffff; /* Nền trắng để làm nổi bật */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Đổ bóng nhẹ */
+  margin: 30px auto;
 }
 
 .add-new {
-  font-size: 30px;
-  margin-top: 10px;
+  text-align: center;
+  color: #d0011b;
+  margin-bottom: 20px;
+  font-size: 28px;
 }
 
 .form-item {
   text-align: left;
-  padding: 10px;
+  margin-bottom: 15px;
 }
 
 .label {
   font-weight: bold;
+  color: #333333;
+  font-size: 16px;
 }
 
 .input {
   width: 100%;
-  /* height: 40px; */
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 14px;
+  color: #333333;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.input:focus {
+  border-color: #d0011b;
+  outline: none;
+  box-shadow: 0 0 5px rgba(208, 1, 27, 0.2); /* Hiệu ứng tập trung */
+}
+
+input[type="file"] {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  margin-top: 20px;
+  background-color: #d0011b;
+  border: 1px solid #d0011b;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+.btn-primary:hover {
+  background-color: #a00016;
+  transform: translateY(-1px); /* Hiệu ứng nổi nhẹ */
+  box-shadow: 0 3px 6px rgba(208, 1, 27, 0.2); /* Tăng đổ bóng khi hover */
+}
+
+.btn-primary:active {
+  background-color: #8a0013;
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Quay lại đổ bóng nhẹ khi click */
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+
+  .add-new {
+    font-size: 28px;
+  }
 }
 </style>

@@ -30,7 +30,7 @@
             class="nav-link"
             :class="{ active: $route.name === 'borrow-client' }"
           >
-            <h6>SÁCH ĐÃ MƯỢN</h6>
+            <h6>SÁCH CỦA TÔI</h6>
           </router-link>
         </li>
 
@@ -40,7 +40,7 @@
             class="nav-link"
             :class="{ active: $route.name === 'account' }"
           >
-            <h6>TÀI KHOẢN CỦA TÔI</h6>
+            <h6>QUẢN LÝ TÀI KHOẢN</h6>
           </router-link>
         </li>
       </ul>

@@ -22,7 +22,7 @@
             class="nav-link"
             :class="{ active: $route.name === 'book' }"
           >
-            <h6>QUẢN LÍ KHO SÁCH</h6>
+            <h6>QUẢN LÝ KHO SÁCH</h6>
           </router-link>
         </li>
 
@@ -32,7 +32,7 @@
             class="nav-link"
             :class="{ active: $route.name === 'borrow' }"
           >
-            <h6>QUẢN LÍ MƯỢN SÁCH</h6>
+            <h6>QUẢN LÝ MƯỢN SÁCH</h6>
           </router-link>
         </li>
 
@@ -42,7 +42,7 @@
             class="nav-link"
             :class="{ active: $route.name === 'reader' }"
           >
-            <h6>QUẢN LÍ NGƯỜI ĐỌC</h6>
+            <h6>HỒ SƠ ĐỘC GIẢ </h6>
           </router-link>
         </li>
       </ul>
